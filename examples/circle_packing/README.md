@@ -20,18 +20,18 @@ subject to the following constraints:
 - **Non-overlapping circles:**  
   For each pair of circles, the distance between their centers must be at least as large as the sum of their radii:
   
-  ```math
-  (x_i - x_j)^2 + (y_i - y_j)^2 \geq (r_i + r_j)^2 \quad \forall\, i \neq j
-  ```
+```math
+(x_i - x_j)^2 + (y_i - y_j)^2 \geq (r_i + r_j)^2 \quad \forall\, i \neq j
+```
 
 - **Boundary constraints:**  
   Each circle must lie entirely within the unit square:
   
-  $$ 
+```math
   r_i \leq x_i \leq 1 - r_i \quad \text{and} \quad r_i \leq y_i \leq 1 - r_i \quad \forall\, i
-  $$
+```
 
-Here, \(x_i\) and \(y_i\) represent the center coordinates of the \(i\)-th circle, and \(r_i\) its radius.
+Here, $x_i$ and $y_i$ represent the center coordinates of the $i$-th circle, and $r_i$ its radius.
 
 ## Algorithmic Approach
 
