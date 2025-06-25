@@ -1,0 +1,57 @@
+researcher:
+  planner: "o4-mini"
+  searcher: "gpt-4o"
+  writer: "o3-mini"
+  reasoning_effort: "high"
+
+coder:
+  developer: "o3-mini"
+  debugger: "o4-mini"
+  reasoning_effort: "high"
+
+# General Settings
+query: null
+max_iterations: 50
+checkpoint_interval: 10
+checkpoint: "ckpt"
+log_level: "INFO"
+log_dir: null
+
+workspace: examples
+problem: null
+search_time_bias: true
+max_research_reflect: 1
+max_coding_reflect: 1
+max_debug_retry: 5
+# Database Configuration
+database:
+  random_seed: null
+  db_path: null
+  in_memory: true
+  population_size: 25 # total maintained for random
+  archive_size: 10 # elite for exploitation
+  num_islands: 5
+  migration_interval: 25
+  migration_rate: 0.1
+  elite_selection_ratio: 0.1
+  exploration_ratio: 0.2
+  exploitation_ratio: 0.7
+  feature_dimensions:
+    - "score"
+    - "diversity"
+    - "complexity"
+  feature_bins: 10
+  n_inspirations: 5
+
+
+hydra:
+  job_logging:
+    disable_existing_loggers: false
+  job:
+    chdir: false
+  run:
+    dir: .
+  output_subdir: null
+
+defaults:
+  - _self_

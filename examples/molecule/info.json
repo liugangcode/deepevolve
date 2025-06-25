@@ -1,0 +1,13 @@
+{
+  "problem": {
+    "name": "molecule",
+    "description": "This task focuses on general molecular property prediction, with Side Effect Resource (SIDER) used as a proxy dataset for algorithm development. The primary goal is to design algorithms that generalize across molecular property prediction tasks. The dataset is scaffold-split to assess generalization to novel chemical structures",
+    "metric": "auc",
+    "interface": "deepevolve_interface.py"
+  },
+  "initial_idea": {
+    "title": "Graph Rationalization with Environment-based Augmentations",
+    "content": "https://arxiv.org/abs/2206.02886",
+    "supplement": "https://github.com/liugangcode/GREA"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "combined_score": 0.7914562889678236,
+  "train_bce_loss_mean": 0.8592897733052572,
+  "train_bce_loss_std": 0.05240924925925277,
+  "train_auc_mean": 0.8043603550557327,
+  "train_auc_std": 0.040930618247002906,
+  "valid_auc_mean": 0.6497507955764487,
+  "valid_auc_std": 0.005306585239214318,
+  "test_auc_mean": 0.5925327307033416,
+  "test_auc_std": 0.00962015276769418
+}

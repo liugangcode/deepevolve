@@ -1,0 +1,3 @@
+torch
+torch_geometric
+rdkit

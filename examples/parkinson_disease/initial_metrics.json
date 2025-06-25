@@ -1,0 +1,6 @@
+{
+  "combined_score": 0.5316947062554211,
+  "symmetric_mean_absolute_percentage_error (lower is better)": 93.66105874891576,
+  "improvement_percentage_to_sota": -0.13,
+  "runtime_minutes": 1.26
+}

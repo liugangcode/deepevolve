@@ -1,0 +1,13 @@
+{
+  "problem": {
+    "name": "circle_packing",
+    "description": "Given a positive integer n, the problem is to pack n disjoint circles inside a unit square so as to maximize the sum of their radii. The problem focuses on discovering a new algorithm that can be applied to n from 26 to 32. You can use numpy, scipy, and shapely. Do not use any other computational geometry libraries.",
+    "metric": "sum of radii",
+    "interface": "deepevolve_interface.py"
+  },
+  "initial_idea": {
+    "title": "The initial idea",
+    "content": "We use scipy.optimize.minimize with the SLSQP algorithm to locate the best circle-packing arrangement. The problem is cast as a constrained optimization in which both each circle's center coordinates and its radius are treated as decision variables. We add inequality constraints to prevent any pair of circles from overlapping and boundary constraints to keep all circles inside the unit square. SLSQP will try to satisfy every inequality, but only to within a numerical tolerance rather than exactly, so it may lead to invalid solutions (e.g., overlapping circles or circles outside the unit square).",
+    "supplement": "https://erich-friedman.github.io/packing/cirRsqu/"
+  }
+}

@@ -1,0 +1,17 @@
+openai-agents
+rich
+GitPython
+PyYAML
+# format code
+black
+# code distance
+rapidfuzz
+# config
+hydra-core
+omegaconf
+# kaggle for downloading datasets
+kaggle
+# for circle packing example
+matplotlib
+shapely
+scipy

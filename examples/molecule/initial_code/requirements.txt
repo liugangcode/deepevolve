@@ -1,0 +1,9 @@
+-f https://download.pytorch.org/whl/cu118/torch_stable.html
+torch==2.2.0+cu118
+
+# Install PyTorch Geometric and related packages
+-f https://data.pyg.org/whl/torch-2.2.0+cu118.html
+torch_geometric==2.6.1
+
+ogb==1.3.2
+rdkit==2023.9.5
