@@ -1,19 +1,19 @@
-<div style="display: flex; align-items: center; gap: 20px;">
+<p align="center">
   <img src="assets/logo1.png" alt="deepevolve logo" width="200"/>
-  <div>
-    <h1>DeepEvolve: Discovering New Scientific Algorithms with Deep Research and AlphaEvolve</h1>
-  </div>
-</div>
+</p>
 
-## Overview
-**DeepEvolve** is a coding agent for new algorithm discovery in different science domains. It combines two parts:
-
-1. **Deep Research** – plans fresh ideas, searches the internet, and writes a research draft.  
-2. **AlphaEvolve** – implements the idea, evaluates it, and improves the algorithm through iterative code evolution.
+<p align="center">
+  <h1><b>DeepEvolve: Discovering New Scientific Algorithms with Deep Research and AlphaEvolve</b></h1>
+</p>
 
 <p align="center">
   <img src="assets/overview.png" alt="DeepEvolve overview" width="400">
 </p>
+
+**DeepEvolve** is a coding agent for new algorithm discovery in different science domains. It combines two parts:
+
+1. **Deep Research** – plans fresh ideas, searches the internet, and writes a research draft.  
+2. **AlphaEvolve** – implements the idea, evaluates it, and improves the algorithm through iterative code evolution.
 
 ## Comparison: DeepEvolve vs AlphaEvolve
 
@@ -169,8 +169,8 @@ We provide examples across different domains.
 | Example            | Task                                       | Category  | Source                                                                                                  |
 | ------------------ | ------------------------------------------ | --------- | ------------------------------------------------------------------------------------------------------- |
 | molecule           | Molecular Property Prediction              | Chemistry | [OGB](https://ogb.stanford.edu/)                                                      |
-| parkinson\_disease | Parkinson's Disease Progression Prediction | Biology   | [Kaggle competition](https://www.kaggle.com/competitions/amp-parkinsons-disease-progression-prediction) |
-| circle\_packing    | Circle Packing                             | Math      | [AlphaEvolve](https://arxiv.org/pdf/2506.13131) / [Erich's Packing Center](https://erich-friedman.github.io/packing/cirinsqu/)              |
+| parkinson\_disease | Parkinson’s Disease Progression Prediction | Biology   | [Kaggle competition](https://www.kaggle.com/competitions/amp-parkinsons-disease-progression-prediction) |
+| circle\_packing    | Circle Packing                             | Math      | [AlphaEvolve](https://arxiv.org/pdf/2506.13131) / [Erich’s Packing Center](https://erich-friedman.github.io/packing/cirinsqu/)              |
 | usp\_p2p           | U.S. Patent Phrase-to-Phrase Matching      | Patent    | [Kaggle competition](https://www.kaggle.com/competitions/us-patent-phrase-to-phrase-matching)           |
 | polymer            | Polymer Property Prediction                | Materials | [Kaggle competition](https://www.kaggle.com/competitions/neurips-open-polymer-prediction-2025/)         |
 | nuclei\_image      | Nuclei Image Segmentation                  | Biology   | [Kaggle competition](https://www.kaggle.com/competitions/data-science-bowl-2018/data)                   |
