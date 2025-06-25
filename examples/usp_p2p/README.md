@@ -1,57 +1,75 @@
-# usp_p2p
+# USP-P2P Semantic Similarity Challenge
+
+## Overview
+
+In this competition, participants are tasked with building a model to determine the semantic similarity between pairs of phrases extracted from patent documents. The goal is to assist patent attorneys and examiners in identifying whether an invention has been described before. This is achieved by matching key phrases and their contexts within patent documents using the Cooperative Patent Classification (CPC) system.
 
 ## Problem Description
 
-In this competition, you will build a model that extracts relevant information by matching key phrases in patent documents. The main goal is to determine the semantic similarity between phrases, which is critically important during the patent search and examination process. For example, if one invention claims "television set" while a prior publication describes "TV set", an ideal model would recognize these as semantically equivalent and help patent attorneys or examiners retrieve the relevant documents. This challenge extends beyond simple paraphrase identification. In certain cases, matching can involve recognizing that different terms such as "strong material" and "steel" could refer to equivalent concepts within specific domains, even though their literal meanings might differ.
+Patent documents contain rich technical content and the phrasing used can vary significantly. For example, a model should be able to recognize that the phrases "television set" and "TV set" refer to the same device. Moreover, the model must account for context provided by CPC codes (version 2021.05) which indicate the technical domain. Thus, the task extends beyond simple paraphrase identification to include cases such as matching "strong material" with "steel", where the interpretation can vary by domain. 
 
-Key points of note:
-- The similarity between two phrases is scored on a scale from 0 (not at all similar) to 1 (identical in meaning).
-- Unlike typical semantic similarity tasks, the similarity here is scored within the context provided by the Cooperative Patent Classification (CPC) system (version 2021.05). The CPC code indicates the technical domain of the patent and is used as an additional feature to disambiguate situations where general language similarities might be misleading.
-- Models are evaluated based on the Pearson correlation coefficient between the predicted and the actual similarity scores.
+### Technical Challenge
 
-Data Files:
-- **train.csv**: Contains the training set with phrases, contexts, and their similarity scores.
-- **test.csv**: The test set, identical in structure to the training set, but includes true scores.
+Given pairs of phrases (an anchor and a target), alongside a contextual feature defined by the CPC code, your model must predict a similarity score between 0 and 1:
+- **0.0**: Unrelated
+- **0.25**: Somewhat related (e.g., same high-level domain or even antonyms)
+- **0.5**: Synonyms with different breadth (hyponym/hypernym matches)
+- **0.75**: Close synonym or abbreviation (e.g., "mobile phone" vs. "cellphone", "TCP" vs. "transmission control protocol")
+- **1.0**: Very close match (usually an almost exact match, barring minor differences)
 
-Data Columns:
-- **id**: Unique identifier for a phrase pair
-- **anchor**: The first phrase
-- **target**: The second phrase
-- **context**: The CPC classification indicating the subject area (version 2021.05)
-- **score**: The similarity score, sourced from manual expert ratings
+The model’s performance is evaluated using the Pearson correlation coefficient between the predicted and actual similarity scores.
 
-Score Meanings:
-- 1.0: Very close match (usually exact match except minor differences in conjugation, quantity, or stopwords)
-- 0.75: Close synonym or abbreviation (e.g., "mobile phone" vs. "cellphone", "TCP" → "transmission control protocol")
-- 0.5: Synonyms with different breadth (hyponym/hypernym matches)
-- 0.25: Somewhat related (same high-level domain or antonyms)
-- 0.0: Unrelated
+## Data Description
 
-Additional Details:
-- **Evaluation Metric**: [pearson_correlation]
-- **Interface File**: `deepevolve_interface.py`
+The dataset provided for this challenge consists of the following files:
 
-You can also refer to the USPTO website for more information on CPC codes and check the CPC archive website for details on version 2021.05.
+- **train.csv**: The training set containing the phrases, contextual CPC classification, and their similarity scores.
+- **test.csv**: The test set, which mirrors the structure of the training set and includes true scores for evaluation.
 
-## Initial Idea
+### Data Columns
 
-The initial approach is to fine-tune the Patent BERT model on the USP-P2P dataset. Specifically, the procedure is as follows:
+Each entry in the dataset consists of:
+- **id**: Unique identifier for a phrase pair.
+- **anchor**: The first phrase.
+- **target**: The second phrase.
+- **context**: The CPC classification (version 2021.05) indicating the subject area within which similarity is scored.
+- **score**: The similarity score (floating point number between 0 and 1) obtained from manual expert ratings.
 
-1. Use the pre-trained model [`anferico/bert-for-patents`](https://huggingface.co/anferico/bert-for-patents) as the base.
-2. Modify the model by adding a single-label regression head to handle the regression task required by the similarity score.
-3. Preprocess each example by tokenizing the input as a single sequence. This is achieved by joining the anchor, target, and context with the `[SEP]` token.
-4. Fine-tune the model for one epoch using:
-   - Batch size: 160
-   - Learning rate: 2e-5
-5. The training process is executed without checkpointing or logging.
-6. Finally, evaluate the fine-tuned model on the test set by computing the Pearson correlation coefficient between the predicted and actual scores.
+## Evaluation Metric
 
-The approach leverages domain-specific pre-training and efficient tokenization to ensure that the context provided by CPC codes is effectively incorporated into the model's predictions.
+The submission will be evaluated based on the Pearson correlation coefficient between the predicted similarity scores and the actual scores. Mathematically, this is represented as:
 
-For mathematical details, if you need to render any equations using MathJax, you can use the following syntax:
-$$
-\text{Loss} = \frac{1}{N} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2
-$$
-where \( y_i \) is the true similarity score and \( \hat{y}_i \) is the predicted score.
+```math
+r = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum_{i=1}^{n} (x_i - \bar{x})^2} \sqrt{\sum_{i=1}^{n} (y_i - \bar{y})^2}}
+```
 
-This project aims to efficiently connect the dots between millions of patent documents by providing robust semantic similarity estimations within a specified technical context.
+where $x_i$ and $y_i$ are the predicted and actual scores respectively, and $\bar{x}$ and $\bar{y}$ are their means.
+
+## Baseline Approach
+
+### Fine-tuning the Patent BERT Model
+
+An initial approach to address this challenge is to fine-tune the [BERT for Patents](https://huggingface.co/anferico/bert-for-patents) model. The following steps outline the proposed methodology:
+
+1. **Model Selection**: Start with the `anferico/bert-for-patents` model.
+2. **Architecture Modification**: Attach a single-label regression head on the model to predict the similarity score.
+3. **Data Tokenization**: Tokenize each example by concatenating the anchor phrase, target phrase, and context with a `[SEP]` token. This results in an input format similar to:
+   ```
+   anchor [SEP] target [SEP] context
+   ```
+4. **Training**: 
+   - Fine-tune for one epoch.
+   - Use a batch size of 160.
+   - Set a learning rate of $2 \times 10^{-5}$.
+   - Training is conducted without checkpointing or logging.
+5. **Evaluation**: Evaluate the fine-tuned model on the test set by computing the Pearson correlation between the predictions and the provided similarity scores.
+
+## Competition Details
+
+- **Interface**: The competition code should implement the interface defined in `deepevolve_interface.py`.
+- **Test Set**: The unseen test set contains approximately 12,000 phrase pairs. Note that a small public test set has been provided for preliminary testing, but it is not used for scoring.
+
+## Resources
+
+- **Patent BERT Model**: [anferico/bert-for-patents](https://huggingface.co/anferico/bert-for-patents)
+- **CPC Codes Information**: Detailed information on CPC codes can be found on the USPTO website and the [CPC archive website](https://www.cooperativepatentclassification.org/).

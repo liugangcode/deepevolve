@@ -1,71 +1,149 @@
-# parkinson_disease
+# Parkinson's Disease Progression Prediction Competition
 
-## Problem Description
-
-The goal of this competition is to predict MDS-UPDR scores, which measure the progression of Parkinson's disease in patients. The MDS-UPDRS (Movement Disorder Society-Sponsored Revision of the Unified Parkinson’s Disease Rating Scale) is a comprehensive assessment tool that examines both motor and non-motor symptoms associated with Parkinson's disease. Participants are expected to develop a model trained on time-series data of protein and peptide levels obtained from subjects with Parkinson's disease and normal age-matched controls.  
-  
-Your work could provide crucial insights into which molecules change as Parkinson's disease progresses, potentially contributing to breakthrough research and new pharmacotherapies.
-
-### Context
-Parkinson's disease (PD) is a disabling brain disorder that affects movement, cognition, sleep, and other functions. There is currently no cure, and the disease worsens over time. It is estimated that by 2037, 1.6 million people in the U.S. will suffer from Parkinson's disease, incurring economic costs approaching \$80 billion. Abnormalities in proteins or peptides are believed to play a key role in the onset and progression of PD. This challenge leverages clinical data and mass spectrometry-based protein abundance data to predict disease progression using time-series predictions.
-
-### Dataset Description
-The dataset comprises measurements from cerebrospinal fluid (CSF) samples, including:
-- **train_peptides.csv**: Mass spectrometry data at the peptide level with details such as visit ID, relative visit month, patient ID, UniProt ID, peptide sequence, and peptide abundance.
-- **train_proteins.csv**: Aggregated protein expression frequencies derived from peptides with columns for visit ID, visit month, patient ID, UniProt ID, and normalized protein expression (NPX).
-- **train_clinical_data.csv**: Clinical assessments including visit ID, month, patient ID, UPDRS scores (parts 1 to 4), and medication status during assessment.
-- **supplemental_clinical_data.csv**: Additional clinical records without associated CSF samples for broader context.
-- Additional files and folders provide example test files, API enabling files, and a utility for running custom offline API tests.
-
-### Competition Specifics
-- **Time-Series Nature**: Predictions should estimate the current UPDRS score at the visit and predict scores 6, 12, and 24 months later. For any visits that did not occur, predictions will be ignored.
-- **Code Competition**: Please refer to the Code Requirements for additional details.
-
-- **Evaluation Metric**: (1-SMAPE(%))/2, where SMAPE is the Symmetric Mean Absolute Percentage Error (SMAPE or sMAPE)
-- **Interface File**: `deepevolve_interface.py`
+This repository contains the code and documentation for the Parkinson's Disease progression prediction competition. The goal is to forecast MDS-UPDRS scores, which measure both motor and non-motor symptoms in Parkinson's patients, using clinical and molecular data. This document outlines the problem statement, dataset details, evaluation metric, and an overview of the winning solution.
 
 ---
 
-## Initial Idea
+## Table of Contents
 
-### 1st Place Solution
-
-The winning approach was built on a simple ensemble that averages predictions from two models: LightGBM (LGB) and a Neural Network (NN). Both models were trained using the same set of features with slight preprocessing differences. The main features include:
-- Visit month
-- Forecast horizon and target prediction month
-- An indicator for whether blood was taken during the visit
-- A supplementary dataset indicator
-- Boolean indicators for patient visits on the 6th, 18th, and 48th month
-- Count of previous “non-annual” visits (specifically, visits at 6 or 18 months)
-- An index representing the pivoted target column
-
-#### LightGBM (LGB)
-- **Approach**: Initially deployed as a regression model with various hyperparameters and custom objective functions, it was later transformed into a classification model. The classification model predicts among 87 discrete target classes (ranging from 0 to the maximum target value) using a log loss objective.
-- **Post-Processing**: The predicted probability distribution over classes is used to select the target value that minimizes the SMAPE+1 metric. This approach naturally handles cases with multiple local minima.
-- **Hyperparameter Tuning**: An optimization routine was run to tune the LGB hyperparameters to minimize SMAPE+1 on cross-validation.
-
-#### Neural Network (NN)
-- **Architecture**: A simple multi-layer feed-forward network configured for regression, with SMAPE+1 as the loss function.
-- **Key Adjustments**: 
-  - Fixed number of epochs and scheduler.
-  - Tuned the learning rate and hidden layer size.
-  - Applied a leaky ReLU activation at the final layer to prevent negative predictions.
-  
-#### Cross-Validation Strategy
-Due to the limited training sample size, several cross-validation schemes were explored. The final method was a leave-one-patient-out (group k-fold with one fold per patient) strategy, which proved to correlate well with the private leaderboard results.
-
-#### Observations and Feature Impact
-- **Effective Features**: An indicator for a visit on the 6th month had the most significant impact, correlating strongly with UPDRS parts (especially parts 2 and 3) and medication frequency.
-- **Model Refinements**: Predictions for visits at month 0 showed consistently lower forecasts for longer horizons. While this made sense statistically, it raised questions regarding clinical expectations.
-- **Failed Approaches**: Extensive efforts to integrate blood test data (protein and peptide features) did not yield measurable improvements, leading to a final strategy that focused on clinical and supplementary datasets.
-
-For a detailed walkthrough of the winning solution, please refer to the [1st Place Solution](https://www.kaggle.com/code/dott1718/1st-place-solution?scriptVersionId=129798049).
+- [Overview](#overview)
+- [Problem Statement](#problem-statement)
+- [Dataset Description](#dataset-description)
+- [Evaluation Metric](#evaluation-metric)
+- [Competition Interface](#competition-interface)
+- [1st Place Solution](#1st-place-solution)
+- [References](#references)
 
 ---
 
-MathJax is enabled for equations. For example, the evaluation metric can be visualized as:  
-$$
-\text{Evaluation Metric} = \frac{1 - \text{SMAPE}(\%)}{2}
-$$
+## Overview
 
-This completes the documentation for the parkinson_disease challenge.
+Parkinson's disease (PD) is a progressive neurological disorder affecting movement, cognition, and other functions. With an increasing number of people predicted to be affected in the future, using data science to understand and predict disease progression could pave the way for new treatments. The competition focuses on developing a model to predict MDS-UPDRS scores using a combination of clinical assessments and protein abundance data.
+
+---
+
+## Problem Statement
+
+The objective is to predict MDS-UPDRS scores for patient visits and to forecast the scores for subsequent visits (6, 12, and 24 months later) using historical clinical data and molecular (protein and peptide) information. Your model will help uncover potential biomarkers responsible for disease progression, aiding in the development of novel pharmacotherapies.
+
+### Key Points
+
+- **Clinical Focus:** MDS-UPDRS (Movement Disorder Society-Sponsored Revision of the Unified Parkinson's Disease Rating Scale) scores.
+- **Data Types:** Protein abundance data (from cerebrospinal fluid samples) and clinical data.
+- **Prediction Horizon:** Forecast scores for current visits as well as future visits (6, 12, and 24 months).
+- **Competition Type:** This is a Code Competition with strict requirements on runtime (under five minutes) and memory usage (less than 0.5 GB).
+
+---
+
+## Dataset Description
+
+The core dataset comprises several CSV files containing detailed information from both clinical assessments and protein mass spectrometry. Below is a brief overview of each file:
+
+- **train_peptides.csv**  
+  Contains peptide-level mass spectrometry data.  
+  **Columns:**  
+  - `visit_id`: Unique identifier for the patient visit.  
+  - `visit_month`: Month of the visit relative to the patient's first visit.  
+  - `patient_id`: Unique patient identifier.  
+  - `UniProt`: Protein identifier.  
+  - `Peptide`: Amino acid sequence of the peptide.  
+  - `PeptideAbundance`: Frequency of the peptide in the sample.
+
+- **train_proteins.csv**  
+  Aggregated protein expression data from the peptide-level information.  
+  **Columns:**  
+  - `visit_id`, `visit_month`, `patient_id`, `UniProt`  
+  - `NPX`: Normalized protein expression value.
+
+- **train_clinical_data.csv**  
+  Clinical assessments including UPDRS scores.  
+  **Columns:**  
+  - `visit_id`, `visit_month`, `patient_id`  
+  - `updrs_1` to `updrs_4`: Different aspects of the UPDRS score.  
+  - `upd23b_clinical_state_on_medication`: Indicator of medication usage during the UPDRS assessment.
+
+- **supplemental_clinical_data.csv**  
+  Additional clinical records without corresponding CSF samples.
+
+- **example_test_files/**  
+  Sample data files demonstrating how the API delivers test set data (note that UPDRS columns are omitted).
+
+- **amp_pd_peptide/**  
+  Files to support API functionality and ensure that predictions can be generated efficiently.
+
+- **public_timeseries_testing_util.py**  
+  An optional utility for running custom offline tests using the time-series API.
+
+---
+
+## Evaluation Metric
+
+Submissions are evaluated using the following metric:
+
+```math
+\frac{1 - \mathrm{SMAPE}(\%)}{2}
+```
+
+where SMAPE is the Symmetric Mean Absolute Percentage Error. For cases where both actual and predicted values are zero, SMAPE is defined as 0.
+
+During evaluation, for each patient visit where a protein/peptide sample was captured, you are required to:
+- Estimate the UPDRS scores for that visit.
+- Predict the scores for potential future visits at 6, 12, and 24 months.  
+Predictions for visits that did not occur are ignored.
+
+---
+
+## Competition Interface
+
+The competition utilizes the `deepevolve_interface.py` file to manage submissions. Your solution should be optimized to work within the following constraints:
+- **Runtime:** Less than five minutes for the complete dataset.
+- **Memory:** Less than 0.5 GB usage.
+
+Submissions should adhere to the code requirements provided in the competition guidelines.
+
+---
+
+## 1st Place Solution
+
+The winning solution was based on a simple averaging of two models: LightGBM (LGB) and Neural Network (NN). Both models shared the same features, with minor differences in preprocessing. Below is a brief overview of the key components:
+
+### Features Used
+- Visit month  
+- Forecast horizon  
+- Target prediction month  
+- Indicator of blood sample collection during the visit  
+- Indicator from the supplementary dataset  
+- Binary indicators for visits occurring at 6th, 18th, and 48th months  
+- Count of previous non-annual visits (e.g., 6th or 18th month visits)  
+- Index of the target (after pivoting the dataset)
+
+Notably, the final solution discarded the blood test results after thorough experimentation as these features did not improve model performance.
+
+### LGB Model
+- **Approach:**  
+  Instead of a traditional regression, the LGB model was re-framed as a classification problem with 87 target classes (ranging from 0 to the maximum target value).  
+- **Objective:**  
+  Log loss was used as the objective function, and a custom post-processing step was implemented. This step selects the predicted value minimizing $ \mathrm{SMAPE} + 1 $ across the predicted distribution, effectively searching among 87 possible integer values.
+- **Hyperparameter Tuning:**  
+  An optimization routine was used to fine-tune model hyperparameters to minimize the target metric.
+
+### Neural Network
+- **Architecture:**  
+  A multi-layer feed-forward network designed for regression, directly optimizing the $ \mathrm{SMAPE} + 1 $ loss.
+- **Activation Function:**  
+  A leaky ReLU was employed as the final activation to prevent negative predictions, ensuring that the outputs remain clinically sensible.
+
+### Cross-Validation
+- **Strategy:**  
+  Several cross-validation schemes were considered, with the final model using a leave-one-patient-out (group k-fold) strategy.  
+- **Observations:**  
+  The cross-validation scores were well aligned with the private leaderboard scores, validating the effectiveness of the chosen strategy.
+
+### Insights
+- The presence of a visit at the 6th month was highly predictive and correlated strongly with higher UPDRS scores.
+- Predictions for forecasts made during `visit_month = 0` exhibited a systematic pattern, which was adjusted to better reflect clinical reasoning.
+- Efforts to incorporate blood test data did not yield improvements. Multiple modeling approaches using these features were attempted, but none improved cross-validation performance reliably. Less complex versions of these features were later introduced with minor effects on public leaderboard performance.
+
+For more details and implementation specifics, please refer to the original Kaggle kernel:
+
+[1st Place Solution on Kaggle](https://www.kaggle.com/code/dott1718/1st-place-solution?scriptVersionId=129798049)
