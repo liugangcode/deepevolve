@@ -25,9 +25,9 @@ The ground truth for this competition is averaged from multiple runs of molecula
 
 The weighted Mean Absolute Error (wMAE) is defined as:
 
-$$
+```math
 \mathrm{wMAE} = \frac{1}{\lvert \mathcal{X} \rvert} \sum_{X \in \mathcal{X}} \sum_{i \in I(X)} w_{i}\,\bigl\lvert \hat{y}_{i}(X) - y_{i}(X) \bigr\rvert
-$$
+```
 
 Each property is assigned a weight $w_{i}$ to ensure that all property types contribute equally regardless of their scale or frequency:
 
