@@ -29,3 +29,5 @@ Key aspects of the approach include:
 - **Numerical Tolerance**: The SLSQP algorithm attempts to satisfy all constraints, but only within a numerical tolerance. This may occasionally result in solutions where circles overlap slightly or extend marginally outside the unit square.
 
 For further insights and related research, you can refer to [this supplement](https://erich-friedman.github.io/packing/cirRsqu/).
+
+> The initial idea is adapted from the output from [OpenEvolve](https://github.com/codelion/openevolve/tree/main/examples/circle_packing)
