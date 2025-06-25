@@ -147,4 +147,5 @@ examples/burgers/selection
 examples/burgers
 examples/molecular_translation
 examples/openvaccine
+examples/create_readme_by_info.py
 discoveries/convert_to_output.py
