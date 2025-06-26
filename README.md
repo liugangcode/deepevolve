@@ -184,7 +184,7 @@ We provide examples across different domains.
 | nuclei\_image      | Nuclei Image Segmentation                  | Biology   | [Kaggle competition](https://www.kaggle.com/competitions/data-science-bowl-2018/data)                   |
 
 
-A checkpoint for the circle packing problem can be found in the corresponding workspace. We display all the discovered algorithms for these examples in the `discoveries` directory.
+A checkpoint for the circle packing problem can be found in the circle packing workspace. We display all the discovered algorithms for these examples in the `discoveries` directory.
 
 ---
 
