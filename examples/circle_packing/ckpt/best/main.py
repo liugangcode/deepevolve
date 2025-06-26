@@ -1,6 +1,3 @@
-'''
-The file has been slightly modified from the deepevolve output for more readable outputs.
-'''
 # DEBUG: Added apply_apollonian_seeding to enable Apollonian-inspired initialization
 ### >>> DEEPEVOLVE-BLOCK-START: Add basic Apollonian perturbation for improved initialization
 def apply_apollonian_seeding(centers, radii):
@@ -404,130 +401,93 @@ def branch_and_bound_correction(centers, radii):
     )
 
 
-def construct_packing(n=26, num_starts=5, max_outer_iter=10, tolerance=1e-8, 
-                     initial_radius=0.05, project_iterations=100, 
-                     delaunay_iterations=50, awvd_iterations=50):
+def construct_packing(n=26):
     """
     Compute circle packing for n circles in the unit square using SLSQP optimization
     with iterative geometric projection corrections.
-    
-    Args:
-        n: number of circles
-        num_starts: number of random initializations (multi-start strategy)
-        max_outer_iter: maximum iterations for block-coordinate descent (outer loop)
-        tolerance: convergence threshold for the change in radii
-        initial_radius: default initial radius for circles
-        project_iterations: maximum iterations for geometric projection corrections
-        delaunay_iterations: maximum iterations for Delaunay-based corrections
-        awvd_iterations: maximum iterations for AWVD projection corrections
-    
     Returns:
         centers: array of shape (n, 2)
         radii: array of shape (n,)
         sum_radii: float
     """
-    from tqdm import tqdm
-    
     # Legacy constraints and bounds removed; using block-coordinate descent directly without explicit SLSQP constraints.
     ### >>> DEEPEVOLVE-BLOCK-START: Iterative Block-Coordinate Descent with Geometric Corrections
     ### >>> DEEPEVOLVE-BLOCK-START: Incorporate multi-start initialization with iterative block-coordinate descent
+    # Hyperparameters:
+    #   num_starts   : number of random initializations (multi-start strategy)
+    #   max_outer_iter: maximum iterations for block-coordinate descent (outer loop)
+    #   tolerance    : convergence threshold for the change in radii (set to 1e-8)
+    num_starts = 5
     best_overall_sum = -np.inf
-    
-    # Progress bar for multi-start optimization
-    start_pbar = tqdm(range(num_starts), desc="Multi-start optimization", unit="start")
-    
-    for start in start_pbar:
+    tolerance = 1e-8
+    for start in range(num_starts):
         # Initialize circles using grid-based heuristic with slight random perturbation for diversity
-        centers, radii = initialize_circles(n, initial_radius=initial_radius)
+        centers, radii = initialize_circles(n, initial_radius=0.05)
         centers = centers + np.random.uniform(-1e-6, 1e-6, centers.shape)
         current_sum = np.sum(radii)
         current_centers = centers.copy()
         current_radii = radii.copy()
+        max_outer_iter = 10
         last_total = current_sum
-        
-        # Progress bar for iterations within this start
-        iter_pbar = tqdm(range(max_outer_iter), desc=f"Start {start+1}/{num_starts}", 
-                        unit="iter", leave=False)
-        
-        for iteration in iter_pbar:
+        for iteration in range(max_outer_iter):
             adaptive_damping = max(0.2, 1.0 * (0.8**iteration))
-            
             # Step 1: Optimize positions with fixed radii using geometric projection corrections
             centers = project_circles(
-                centers, radii, iterations=project_iterations, damping=adaptive_damping
+                centers, radii, iterations=100, damping=adaptive_damping
             )
             centers = weighted_delaunay_projection_correction(
-                centers, radii, damping=adaptive_damping, iterations=delaunay_iterations
+                centers, radii, damping=adaptive_damping, iterations=50
             )
             # Apply AWVD-based projection correction for enhanced overlap reduction
             centers = awvd_projection_correction(
-                centers, radii, damping=adaptive_damping, iterations=awvd_iterations
+                centers, radii, damping=adaptive_damping
             )
-            
             # Step 2: Optimize radii with fixed centers using block-coordinate descent
             radii_new = optimize_radii_fixed_centers(centers, radii)
-            
             ### >>> DEEPEVOLVE-BLOCK-START: Incorporate SDP relaxation for global bound checking and branch-and-bound refinement
             global_bound = solve_SDP_relaxation(centers, radii_new)
             if global_bound < np.sum(radii_new) * 0.99:
                 centers, radii_new = branch_and_bound_correction(centers, radii_new)
             ### <<< DEEPEVOLVE-BLOCK-END
-            
             # Interval certification check: if configuration fails the rigorous interval verification,
             # apply an advanced branch-and-bound correction (using simplex-based branching and SDP-based bounding as a placeholder).
             if not interval_verify(centers, radii_new):
                 centers, radii_new = branch_and_bound_correction(centers, radii_new)
-                
             # Update positions to reflect new radii with adaptive damping
             centers = project_circles(
-                centers, radii_new, iterations=project_iterations, damping=adaptive_damping
+                centers, radii_new, iterations=100, damping=adaptive_damping
             )
             centers = weighted_delaunay_projection_correction(
-                centers, radii_new, damping=adaptive_damping, iterations=delaunay_iterations
+                centers, radii_new, damping=adaptive_damping, iterations=50
             )
             ### <<< DEEPEVOLVE-BLOCK-END
-            
             total = np.sum(radii_new)
-            
-            # Update progress bar with current metrics
-            iter_pbar.set_postfix({
-                'total_radii': f'{total:.6f}',
-                'damping': f'{adaptive_damping:.3f}'
-            })
-            
+            print(
+                f"Iteration {iteration}: total radii = {total:.8f}, adaptive damping = {adaptive_damping:.4f}"
+            )
             if iteration > 0:
                 improvement = total - last_total
                 if improvement < 1e-5:
                     centers = centers + np.random.uniform(-1e-4, 1e-4, centers.shape)
-                    iter_pbar.set_description(f"Start {start+1}/{num_starts} (restart)")
-                    
+                    print(
+                        f"Stagnation detected at iteration {iteration}, applying restart perturbation."
+                    )
             last_total = total
             if total > current_sum:
                 current_sum = total
                 current_centers = centers.copy()
                 current_radii = radii_new.copy()
-                
             if np.linalg.norm(radii_new - radii) < tolerance:
-                iter_pbar.set_description(f"Start {start+1}/{num_starts} (converged)")
+                print("Convergence criterion met based on radii change.")
                 break
-                
             radii = radii_new
-            
-        iter_pbar.close()
-        
         if current_sum > best_overall_sum:
             best_overall_sum = current_sum
             best_centers = current_centers.copy()
             best_radii = current_radii.copy()
-            
-        # Update outer progress bar with best result so far
-        start_pbar.set_postfix({'best_sum': f'{best_overall_sum:.6f}'})
-            
-    start_pbar.close()
     ### <<< DEEPEVOLVE-BLOCK-END
     ### <<< DEEPEVOLVE-BLOCK-END
     ### <<< DEEPEVOLVE-BLOCK-END
-    
     # Final projection correction to ensure valid, non-overlapping packings
     ### >>> DEEPEVOLVE-BLOCK-START: Attempt additional correction if final projection validation fails
     centers = project_circles(best_centers, best_radii, iterations=200, damping=0.3)
@@ -635,7 +595,7 @@ def visualize(centers, radii):
 
 
 if __name__ == "__main__":
-    centers, radii, sum_radii = construct_packing(n=26, num_starts=10, max_outer_iter=50)
+    centers, radii, sum_radii = construct_packing(n=26)
     print("centers", centers)
     print("radii", radii)
     print("sum_radii", sum_radii)
