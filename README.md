@@ -1,19 +1,17 @@
 <p align="center">
-  <img src="assets/logo1.png" alt="deepevolve logo" width="200"/>
+  <img src="assets/logo.png" alt="deepevolve logo" width="400"/>
 </p>
 
-<p align="center">
-  <h1><b>DeepEvolve: Discovering New Scientific Algorithms with Deep Research and AlphaEvolve</b></h1>
-</p>
-
-<p align="center">
-  <img src="assets/overview.png" alt="DeepEvolve overview" width="400">
-</p>
+---
 
 **DeepEvolve** is a coding agent for new algorithm discovery in different science domains. It combines two parts:
 
 1. **Deep Research** – plans fresh ideas, searches the internet, and writes a research draft.  
 2. **AlphaEvolve** – implements the idea, evaluates it, and improves the algorithm through iterative code evolution.
+
+<p align="center">
+  <img src="assets/overview.png" alt="DeepEvolve overview" width="400">
+</p>
 
 ## Comparison: DeepEvolve vs AlphaEvolve
 
@@ -111,7 +109,7 @@ Example outputs are included under `examples/circle_packing/ckpt`.
        """
    ```
 
-   The metric dictionary guides optimization; a higher `combined_score` is better.
+   **The metric dictionary guides optimization; a higher `combined_score` is better.**
    You can include other metrics (floats or strings), which will also be used to instruct the LLMs.
    A simple example for `deepevolve_interface.py` is:
 
@@ -176,7 +174,7 @@ We provide examples across different domains.
 | nuclei\_image      | Nuclei Image Segmentation                  | Biology   | [Kaggle competition](https://www.kaggle.com/competitions/data-science-bowl-2018/data)                   |
 
 
-We display the discovered algorithms in the `discoveries` directory.
+A checkpoint for the circle packing problem can be found in the corresponding workspace. We display all the discovered algorithms for these examples in the `discoveries` directory.
 
 ---
 

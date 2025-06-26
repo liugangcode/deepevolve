@@ -33,7 +33,8 @@ subject to the following constraints:
 
 Here, $x_i$ and $y_i$ represent the center coordinates of the $i$-th circle, and $r_i$ its radius.
 
-## Algorithmic Approach
+## Initial Idea
+> The initial idea is adapted from the output from [OpenEvolve](https://github.com/codelion/openevolve/tree/main/examples/circle_packing)
 
 The proposed method leverages `scipy.optimize.minimize` with the Sequential Least Squares Programming (SLSQP) algorithm. The problem is modeled as a constrained optimization task where both the center coordinates \((x_i, y_i)\) and the radius \(r_i\) of each circle are treated as decision variables.
 
@@ -56,5 +57,3 @@ Since SLSQP enforces constraints only within a numerical tolerance, it is import
 For further details and insights on circle packing, please refer to the following resource:
 
 [Circle Packing Supplementary Material](https://erich-friedman.github.io/packing/cirRsqu/)
-
-> The initial idea is adapted from the output from [OpenEvolve](https://github.com/codelion/openevolve/tree/main/examples/circle_packing)

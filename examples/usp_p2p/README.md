@@ -45,7 +45,7 @@ r = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum_{i=1}^{n} (x
 
 where $x_i$ and $y_i$ are the predicted and actual scores respectively, and $\bar{x}$ and $\bar{y}$ are their means.
 
-## Baseline Approach
+## Initial Idea
 
 ### Fine-tuning the Patent BERT Model
 

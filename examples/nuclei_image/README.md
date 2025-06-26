@@ -4,7 +4,7 @@
 
 Identifying the cells' nuclei is the starting point for most analyses because most of the human body's 30 trillion cells contain a nucleus full of DNA, the genetic code that programs each cell. By isolating nuclei, researchers can identify individual cells within a sample and analyze how they respond to various treatments. This is crucial for understanding the underlying biological processes at work.
 
-By participating in this challenge, teams will work on automating the process of nuclei identification, which has the potential to significantly accelerate drug testing, thereby reducing the time required to bring new drugs to market. For more context, please check out [this video overview](#).
+By participating in this challenge, teams will work on automating the process of nuclei identification, which has the potential to significantly accelerate drug testing, thereby reducing the time required to bring new drugs to market.
 
 ## Evaluation
 
