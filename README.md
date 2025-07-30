@@ -174,15 +174,21 @@ Example outputs are included under `examples/circle_packing/ckpt`.
 
 We provide examples across different domains.
 
-| Example            | Task                                       | Category  | Source                                                                                                  |
-| ------------------ | ------------------------------------------ | --------- | ------------------------------------------------------------------------------------------------------- |
-| molecule           | Molecular Property Prediction              | Chemistry | [OGB](https://ogb.stanford.edu/)                                                      |
-| parkinson\_disease | Parkinson’s Disease Progression Prediction | Biology   | [Kaggle competition](https://www.kaggle.com/competitions/amp-parkinsons-disease-progression-prediction) |
-| circle\_packing    | Circle Packing                             | Math      | [AlphaEvolve](https://arxiv.org/pdf/2506.13131) / [Erich’s Packing Center](https://erich-friedman.github.io/packing/cirinsqu/)              |
-| usp\_p2p           | U.S. Patent Phrase-to-Phrase Matching      | Patent    | [Kaggle competition](https://www.kaggle.com/competitions/us-patent-phrase-to-phrase-matching)           |
-| polymer            | Polymer Property Prediction                | Materials | [Kaggle competition](https://www.kaggle.com/competitions/neurips-open-polymer-prediction-2025/)         |
-| nuclei\_image      | Nuclei Image Segmentation                  | Biology   | [Kaggle competition](https://www.kaggle.com/competitions/data-science-bowl-2018/data)                   |
+## More Examples and Discoveries
 
+We provide examples across different domains.
+
+| Example                | Task                                         | Category  | Source                                                                                                  |
+| ---------------------- | -------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------- |
+| molecule               | Molecular Property Prediction                | Chemistry | [OGB](https://ogb.stanford.edu/)                                                                        |
+| molecular_translation  | Translation between Molecular Image and Structure | Chemistry | [Kaggle competition](https://www.kaggle.com/competitions/bms-molecular-translation)                     |
+| circle_packing         | Circle Packing                               | Math      | [AlphaEvolve](https://arxiv.org/pdf/2506.13131) / [Erich’s Packing Center](https://erich-friedman.github.io/packing/cirinsqu/) |
+| burgers                | Partial Differential Equations (Burgers’ Equation) | Math      | [CodePDE](https://arxiv.org/abs/2505.08783)                                                             |
+| parkinson_disease      | Parkinson’s Disease Progression Prediction   | Biology   | [Kaggle competition](https://www.kaggle.com/competitions/amp-parkinsons-disease-progression-prediction) |
+| nuclei_image           | Nuclei Image Segmentation                    | Biology   | [Kaggle competition](https://www.kaggle.com/competitions/data-science-bowl-2018/data)                   |
+| openvaccine            | COVID-19 mRNA Vaccine Degradation Prediction | Biology   | [Kaggle competition](https://www.kaggle.com/competitions/stanford-covid-vaccine)                        |
+| polymer                | Polymer Property Prediction                  | Materials | [Kaggle competition](https://www.kaggle.com/competitions/neurips-open-polymer-prediction-2025/)         |
+| usp_p2p                | U.S. Patent Phrase-to-Phrase Matching        | Patent    | [Kaggle competition](https://www.kaggle.com/competitions/us-patent-phrase-to-phrase-matching)           |
 
 A checkpoint for the circle packing problem can be found in the circle packing workspace. We display all the discovered algorithms for these examples in the `discoveries` directory.
 

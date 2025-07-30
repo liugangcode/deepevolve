@@ -1,0 +1,8 @@
+{
+  "combined_score": 0.7186727181497392,
+  "improvement_percentage_to_initial": 0.0,
+  "improvement_percentage_to_first_place": -14.47,
+  "runtime_minutes": 26.68,
+  "test_MCRMSE_lower_is_better": 0.3914539605379105,
+  "train_mean_loss_across_folds_lower_is_better": 0.3197553661678519
+}
