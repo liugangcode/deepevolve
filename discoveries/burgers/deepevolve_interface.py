@@ -91,7 +91,6 @@ def run_main_with_timeout():
 
     result = {"metrics": {}, "error": None}
 
-    # time_per_nu = [100, 300, 1400]
     time_per_nu = [1800]
 
     try:

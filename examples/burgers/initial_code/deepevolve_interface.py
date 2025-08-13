@@ -75,24 +75,24 @@ def run_single_nu_with_timeout(nu, timeout_sec=600):
         warnings.warn(f"Nu={nu} did not return any result.")
         return None
 
-def run_main_with_timeout(timeout_sec=1800):
+def run_main_with_timeout():
     """Run main function with timeout and error handling"""
     setup_signal_handler()
     
     result = {"metrics": {}, "error": None}
     
-    time_per_nu = timeout_sec // 3  # 600 seconds per nu
+    time_per_nu = [1800]
         
     try:
         # Initialize CUDA once at the beginning
         if torch.cuda.is_available():
             torch.cuda.init()
         
-        for nu in [0.01, 0.1, 1.0]:
+        for i, nu in enumerate([1.0]):
             try:
                 cleanup_cuda_context()
                 
-                nu_result = run_single_nu_with_timeout(nu, time_per_nu)
+                nu_result = run_single_nu_with_timeout(nu, time_per_nu[i])
                 if nu_result is not None:
                     result["metrics"][nu] = nu_result
                     
@@ -122,27 +122,27 @@ def deepevolve_interface():
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always")
             start_time = time()
-            results = run_main_with_timeout(1800)
+            results = run_main_with_timeout()
             runtime = time() - start_time
             
         warning_messages = [str(w.message) for w in caught]
         
         metrics = {}
         combined_scores = []
-        for nu in [0.01, 0.1, 1.0]:
+        for nu in [1.0]:
             nu_metrics = results.get(nu, {
                 "nrmse": None,
                 "avg_rate": None,
                 "time_in_minutes": None
             })
             if nu_metrics["nrmse"] is not None and nu_metrics["avg_rate"] is not None and nu_metrics["time_in_minutes"] is not None:
-                current_combined_score = np.exp(nu_metrics["avg_rate"]) / (nu_metrics["nrmse"] + nu_metrics["time_in_minutes"])
+                current_combined_score = 1 / (nu_metrics["nrmse"] * 10**3)
                 if np.isnan(current_combined_score):
                     current_combined_score = 0
             else:
                 current_combined_score = 0
             combined_scores.append(current_combined_score)
-
+            
             metrics[f'nu_{nu}_combined_score'] = current_combined_score
             metrics[f'nu_{nu}_nrmse'] = nu_metrics["nrmse"]
             metrics[f'nu_{nu}_convergence_rate'] = nu_metrics["avg_rate"]
